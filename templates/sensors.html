@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+{% extends "base.html" %}
+
+{% block title %}
+Sensors - SENSY IoT
+{% endblock %}
+
+{% block content %}
+<br></br>
+<div class="dashboard-header">
+    <h1>My Sensors</h1>
+    <button class="add-sensor-btn">Add New Sensor</button>
+</div>
+
+<div class="boards-table-container">
+    <table class="boards-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Board</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if not sensors %}
+                <tr>
+                    <td colspan="5" class="no-boards">No sensors found.</td>
+                </tr>
+            {% else %}
+                {% for sensor in sensors %}
+                    <tr>
+                        <td>{{ sensor.type or '-' }}</td>
+                        <td>{{ sensor.board.name }}</td>
+                        <td>{{ sensor.name }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('control', action='ON' if not sensor.is_active else 'OFF') }}">
+                                <button type="submit">{{ 'Turn Off' if sensor.is_active else 'Turn On' }}</button>
+                            </form>
+                        </td>
+                        <td>
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div id="addSensorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add Sensor</h2>
+            <span class="close-modal">×</span>
+        </div>
+        <div class="modal-body">
+            <form id="addSensorForm" method="POST" action="{{ url_for('sensors') }}">
+                <div class="form-group">
+                    <label for="sensor-name">Name</label>
+                    <input type="text" id="sensor-name" name="sensor-name" placeholder="Enter sensor name" required>
+                </div>
+                <div class="form-group">
+                    <label for="sensor-type">Type</label>
+                    <select id="sensor-type" name="sensor-type" required>
+                        <option value="temperature">Temperature</option>
+                        <option value="humidity">Humidity</option>
+                        <option value="pressure">Pressure</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="board-id">Board</label>
+                    <select id="board-id" name="board-id" required>
+                        {% for board in boards %}
+                            <option value="{{ board.id }}">{{ board.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="cancel-btn">Cancel</button>
+            <button type="submit" form="addSensorForm" class="confirm-btn">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addSensorBtn = document.querySelector('.add-sensor-btn');
+        const modal = document.getElementById('addSensorModal');
+        const closeModal = document.querySelector('.close-modal');
+        const cancelBtn = document.querySelector('.cancel-btn');
+
+        addSensorBtn.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
+</body>
+</html>

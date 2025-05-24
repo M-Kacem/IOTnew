@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block title %}
+    Boards - SENSY IoT
+    {% endblock %}
+    
+    {% block content %}
+        <div class="dashboard-header">
+            <h1>Boards</h1>
+            <div class="header-actions">
+                <input type="text" class="search-bar" placeholder="Search" aria-label="Search">
+                <button class="create-btn">Create</button>
+            </div>
+        </div>
+    
+        <div class="boards-table-container">
+            <table class="boards-table">
+                <thead>
+                    <tr>
+                        <th>Logo</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if not boards %}
+                        <tr>
+                            <td colspan="4" class="no-boards">No boards found.</td>
+                        </tr>
+                    {% else %}
+                        {% for board in boards %}
+                            <tr>
+                                <td><img src="{{ url_for('static', filename='uploads/' + board.logo) if board.logo else '' }}" alt="Board Logo" class="board-logo"></td>
+                                <td>{{ board.name }}</td>
+                                <td>
+                                    <label class="switch">
+                                        <input type="checkbox" {% if board.status == 'active' %}checked{% endif %} disabled>
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Modale pour ajouter un nouveau board -->
+        <div id="addBoardModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add board</h2>
+                    <span class="close-modal">×</span>
+                </div>
+                <div class="modal-body">
+                    <form id="addBoardForm">
+                        <div class="form-group">
+                            <label for="board-name">Name</label>
+                            <input type="text" id="board-name" name="board-name" placeholder="Enter board name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="board-logo">Logo</label>
+                            <div class="upload-area">
+                                <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                                <p>Upload logo or drag and drop<br>(Max: 10KB, PNG, JPG, SVG)</p>
+                                <p>SVG for best quality and dark/light mode compatibility.</p>
+                                <input type="file" id="board-logo" name="board-logo" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Realtime</label>
+                            <label class="switch"></label>
+                            <input type="checkbox" id="realtime" name="realtime">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit" form="addBoardForm" class="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    
+        <script>
+            // JavaScript pour gérer la modale
+            document.addEventListener('DOMContentLoaded', function() {
+                const createBtn = document.querySelector('.create-btn');
+                const modal = document.getElementById('addBoardModal');
+                const closeModal = document.querySelector('.close-modal');
+                const cancelBtn = document.querySelector('.cancel-btn');
+    
+                createBtn.addEventListener('click', function() {
+                    modal.style.display = 'block';
+                });
+    
+                closeModal.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+    
+                cancelBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+    
+                window.addEventListener('click', function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>

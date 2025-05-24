@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Profile - Raven Industries</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block title %}
+    Profile Settings - SENSY IoT
+    {% endblock %}
+    
+    {% block content %}
+        <div class="dashboard-header">
+            <h1>Profile Settings</h1>
+        </div>
+    
+        <div class="settings-container">
+            <!-- Disposition en grille pour photo et formulaire -->
+            <div class="settings-grid">
+                <!-- Photo de profil -->
+                <div class="profile-photo">
+                    <div class="photo-placeholder" id="photo-placeholder" {% if photo_path %}style="background-image: url({{ url_for('static', filename=photo_path) }});"{% endif %}></div>
+                    <label for="photo-upload" class="upload-btn">
+                        <i class="fas fa-upload"></i> Upload photo
+                    </label>
+                    <input type="file" id="photo-upload" name="photo-upload" accept="image/*" style="display: none;">
+                </div>
+    
+                <!-- Formulaire -->
+                <form class="settings-form" method="POST" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name">First Name</label>
+                            <input type="text" id="first-name" name="first-name" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Last Name</label>
+                            <input type="text" id="last-name" name="last-name" placeholder="Last Name">
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone-number">Phone Number</label>
+                            <div class="phone-input">
+                                <i class="fas fa-phone"></i>
+                                <input type="tel" id="phone-number" name="phone-number" placeholder="     Phone Number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="company-name">Company Name</label>
+                            <input type="text" id="company-name" name="company-name" placeholder="Company Name">
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="unit-type">Unit Type</label>
+                            <select id="unit-type" name="unit-type">
+                                <option>European standard</option>
+                                <option>US standard</option>
+                                <option>Metric</option>
+                            </select>
+                        </div>
+                    </div>
+    
+                    <!-- Thème de couleur -->
+                    <div class="form-group">
+                        <label>Theme colors</label>
+                        <div class="theme-colors">
+                            <span class="color-circle" style="background-color: #4CAF50;" data-color="#4CAF50"></span>
+                            <span class="color-circle" style="background-color: #00BCD4;" data-color="#00BCD4"></span>
+                            <span class="color-circle" style="background-color: #F44336;" data-color="#F44336"></span>
+                            <span class="color-circle" style="background-color: #9C27B0;" data-color="#9C27B0"></span>
+                            <span class="color-circle" style="background-color: #212121;" data-color="#212121"></span>
+                            <button type="button" class="change-password-btn">Change Password</button>
+
+                        </div>
+                    </div>
+    
+                    <!-- Lien pour changer le mot de passe -->
+                    <button type="submit" class="save-btn">Save Changes</button>
+
+        
+    
+                    <!-- Boutons -->
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn" onclick="window.location.href='{{ url_for('settings') }}'">Cancel</button>
+                        <button type="submit" class="update-btn">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    <!-- Modale pour changer le mot de passe -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Change Password</h2>
+                <span class="close-modal">×</span>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm" method="POST" action="{{ url_for('change_password') }}">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter current password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="new-password" placeholder="Enter new password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-password">Confirm New Password</label>
+                        <input type="password" id="confirm-new-password" name="confirm-new-password" placeholder="Confirm new password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-btn">Cancel</button>
+                <button type="submit" form="changePasswordForm" class="confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+        
+
+        <!-- Script pour prévisualiser la photo et gérer le thème -->
+        <script>
+            // Prévisualisation de la photo
+            document.getElementById('photo-upload').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoPlaceholder = document.getElementById('photo-placeholder');
+                        photoPlaceholder.style.backgroundImage = `url(${e.target.result})`;
+                        photoPlaceholder.style.backgroundSize = 'cover';
+                        photoPlaceholder.style.backgroundPosition = 'center';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+    
+            // Gestion du thème
+            document.querySelectorAll('.color-circle').forEach(circle => {
+                circle.addEventListener('click', function() {
+                    const selectedColor = this.getAttribute('data-color');
+                    document.documentElement.style.setProperty('--primary-color', selectedColor);
+                    localStorage.setItem('themeColor', selectedColor);
+                });
+            });
+    
+            const savedColor = localStorage.getItem('themeColor');
+            if (savedColor) {
+                document.documentElement.style.setProperty('--primary-color', savedColor);
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+            const changePasswordBtn = document.querySelector('.change-password-btn');
+            const modal = document.getElementById('changePasswordModal');
+            const closeModal = document.querySelector('.close-modal');
+            const cancelBtn = document.querySelector('.cancel-btn');
+
+            changePasswordBtn.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        </script>
+    {% endblock %}
+</body>
+</html>

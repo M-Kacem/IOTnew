@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block title %}
+    Dashboard IoT
+    {% endblock %}
+    
+    {% block content %}
+        <div class="dashboard-header">
+            <h1>Dashboard</h1>
+            <div class="header-actions">
+                <input type="text" class="search-bar" placeholder="Search" aria-label="Search">
+                <button class="create-btn">Create</button>
+            </div>
+        </div>
+
+        <div class="dashboard-table-container">
+            <table class="dashboard-table">
+                <tbody>
+                    <tr>
+                        <td class="no-data">No boards found.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modale pour ajouter un board -->
+        <div class="create-board-modal" id="createBoardModal" style="display: none;">
+            <div class="create-board-content">
+                <div class="create-board-header">
+                    <h2>Create New Board</h2>
+                    <span class="close-board-modal">×</span>
+                </div>
+                <div class="create-board-body">
+                    <form id="createBoardForm" method="POST" action="{{ url_for('add_board') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="board-name">Board Name</label>
+                            <input type="text" id="board-name" name="board-name" placeholder="Enter board name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" name="status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="board-logo">Board Logo (Optional)</label>
+                            <input type="file" id="board-logo" name="board-logo" accept="image/*">
+                        </div>
+                        <div class="create-board-footer">
+                            <button type="button" class="cancel-board-btn">Cancel</button>
+                            <button type="submit" class="confirm-board-btn">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Gestion de la modale pour ajouter un board
+            const createBoardBtn = document.querySelector('.create-btn');
+            const createBoardModal = document.getElementById('createBoardModal');
+            const closeBoardModal = document.querySelector('.close-board-modal');
+            const cancelBoardBtn = document.querySelector('.cancel-board-btn');
+
+            createBoardBtn.addEventListener('click', function() {
+                createBoardModal.style.display = 'block';
+            });
+
+            closeBoardModal.addEventListener('click', function() {
+                createBoardModal.style.display = 'none';
+            });
+
+            cancelBoardBtn.addEventListener('click', function() {
+                createBoardModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == createBoardModal) {
+                    createBoardModal.style.display = 'none';
+                }
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>

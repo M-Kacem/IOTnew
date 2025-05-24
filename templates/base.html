@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <!-- Barre de navigation horizontale -->
+    <nav class="top-nav">
+        <div class="logo">SENSY IOT</div>
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#">Features</a>
+            <a href="#">Why choose Us</a>
+            <a href="#">Documentation</a>
+            <button class="dashboard-btn">Dashboard</button>
+        </div>
+    </nav>
+
+    <!-- Barre latérale -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboards</a></li>
+            <li><a href="{{ url_for('real_time_data') }}"><i class="fas fa-chart-line"></i> Real Time Data</a></li>
+            <li><a href="{{ url_for('boards') }}"><i class="fas fa-chalkboard"></i> Boards</a></li>
+            <li><a href="{{ url_for('sensors') }}"><i class="fas fa-thermometer-half"></i> Sensors</a></li>
+            <li><a href="{{ url_for('activity_logs') }}"><i class="fas fa-list"></i> Activity Logs</a></li>
+            <li><a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="{{ url_for('login') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

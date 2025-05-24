@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block title %}
+    Home - SENSY IoT
+    {% endblock %}
+    
+    {% block content %}
+        <div class="dashboard-header">
+            <h1>Home</h1>
+            <div class="header-actions">
+                <button class="customize-btn">Customize</button>
+                <button class="create-board-btn">Create</button>
+            </div>
+        </div>
+    
+        <!-- Message central (Placeholder) -->
+        <div class="no-boards">
+            <p>No Boards Found.</p>
+        </div>
+    
+        <!-- Statistiques -->
+        <div class="dashboard-grid">
+            <!-- Boards -->
+            <div class="card stats-card">
+                <h3>Boards</h3>
+                <div class="stats-row">
+                    <div class="stat">
+                        <i class="fas fa-check-circle active-icon"></i>
+                        <p>Active</p>
+                        <span>0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-times-circle inactive-icon"></i>
+                        <p>Inactive</p>
+                        <span>0</span>
+                    </div>
+                </div>
+                <a href="#" class="view-all">View All</a>
+            </div>
+    
+            <!-- Sensors -->
+            <div class="card stats-card">
+                <h3>Sensors</h3>
+                <div class="stats-row">
+                    <div class="stat">
+                        <i class="fas fa-check-circle active-icon"></i>
+                        <p>Active</p>
+                        <span>0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-times-circle inactive-icon"></i>
+                        <p>Inactive</p>
+                        <span>0</span>
+                    </div>
+                </div>
+                <a href="#" class="view-all">View All</a>
+            </div>
+    
+            <!-- Activity Logs -->
+            <div class="card stats-card">
+                <h3>Activity Logs</h3>
+                <p>No recent activity.</p>
+                <a href="#" class="view-all">View All</a>
+            </div>
+        </div>
+
+        <!-- Modale pour personnalisation (existante) -->
+        <div class="customize-modal" id="customize-modal" style="display: none;">
+            <div class="customize-content">
+                <h2>Customize Dashboard</h2>
+                <p>Customize Your Home Page View: Choose what you want to see or hide.</p>
+                <div class="customize-options">
+                    <div class="option-row">
+                        <label>Active Boards</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>Inactive Boards</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>Active Sensors</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>Inactive Sensors</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>Activity Logs</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>My Boards</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="option-row">
+                        <label>My Widgets</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="cancel-btn">Cancel</button>
+                    <button class="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nouvelle modale pour ajouter un board -->
+        <div class="create-board-modal" id="createBoardModal" style="display: none;">
+            <div class="create-board-content">
+                <div class="create-board-header">
+                    <h2>Create New Board</h2>
+                    <span class="close-board-modal">×</span>
+                </div>
+                <div class="create-board-body">
+                    <form id="createBoardForm" method="POST" action="{{ url_for('add_board') }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="board-name">Board Name</label>
+                            <input type="text" id="board-name" name="board-name" placeholder="Enter board name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select id="status" name="status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="board-logo">Board Logo (Optional)</label>
+                            <input type="file" id="board-logo" name="board-logo" accept="image/*">
+                        </div>
+                        <div class="create-board-footer">
+                            <button type="button" class="cancel-board-btn">Cancel</button>
+                            <button type="submit" class="confirm-board-btn">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Gestion de la modale de personnalisation (existante)
+            document.querySelector('.customize-btn').addEventListener('click', function() {
+                document.getElementById('customize-modal').style.display = 'block';
+            });
+
+            document.querySelector('.cancel-btn').addEventListener('click', function() {
+                document.getElementById('customize-modal').style.display = 'none';
+            });
+
+            document.querySelector('.confirm-btn').addEventListener('click', function() {
+                document.getElementById('customize-modal').style.display = 'none';
+                const options = document.querySelectorAll('.customize-options input');
+                const preferences = {};
+                options.forEach((option, index) => {
+                    preferences[`option${index}`] = option.checked;
+                });
+                localStorage.setItem('dashboardPreferences', JSON.stringify(preferences));
+            });
+
+            const savedPreferences = localStorage.getItem('dashboardPreferences');
+            if (savedPreferences) {
+                const preferences = JSON.parse(savedPreferences);
+                const options = document.querySelectorAll('.customize-options input');
+                options.forEach((option, index) => {
+                    if (preferences[`option${index}`] !== undefined) {
+                        option.checked = preferences[`option${index}`];
+                    }
+                });
+            }
+
+            // Gestion de la nouvelle modale pour ajouter un board
+            const createBoardBtn = document.querySelector('.create-board-btn');
+            const createBoardModal = document.getElementById('createBoardModal');
+            const closeBoardModal = document.querySelector('.close-board-modal');
+            const cancelBoardBtn = document.querySelector('.cancel-board-btn');
+
+            createBoardBtn.addEventListener('click', function() {
+                createBoardModal.style.display = 'block';
+            });
+
+            closeBoardModal.addEventListener('click', function() {
+                createBoardModal.style.display = 'none';
+            });
+
+            cancelBoardBtn.addEventListener('click', function() {
+                createBoardModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == createBoardModal) {
+                    createBoardModal.style.display = 'none';
+                }
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>

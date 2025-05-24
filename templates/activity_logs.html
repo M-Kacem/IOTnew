@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+{% extends "base.html" %}
+
+{% block title %}
+Activity Logs - SENSY IoT
+{% endblock %}
+
+{% block content %}
+<br></br>
+<div class="dashboard-header">
+    <h1>Activity Logs</h1>
+</div>
+<div class="activity-logs-content">
+    {% if logs %}
+        <table class="activity-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    <th>Board/Sensor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp }}</td>
+                        <td>{{ log.action }}</td>
+                        <td>
+                            {% if log.board_id %}
+                                {{ log.board.name }}
+                            {% elif log.sensor_id %}
+                                {{ log.sensor.name }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-logs-icon">
+            <i class="fas fa-history"></i>
+        </div>
+        <p class="no-logs-message">No activity logs found!</p>
+    {% endif %}
+</div>
+{% endblock %}
+</body>
+</html>

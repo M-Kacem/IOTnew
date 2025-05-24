@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Company Profile - Raven Industries</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .overview, .founder-year, .solutions, .facts {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .overview-text, .founder-text, .solutions-list, .facts-list {
+            width: 60%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .founder-year-box {
+            width: 30%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .founder-box, .year-box {
+            width: 45%;
+            background-color: #f9f9f9;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .solutions-list ul, .facts-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .solutions-list ul li, .facts-list ul li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .solutions-list ul li:before, .facts-list ul li:before {
+            content: "➡";
+            color: #4CAF50;
+            position: absolute;
+            left: 0;
+        }
+        .facts-list ul li:before {
+            content: "📊";
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
+
+    {% block title %}
+    Company Profile - Raven Industries
+    {% endblock %}
+    
+    {% block content %}
+        <div class="dashboard-header">
+            <h1>Company profile analysis - Raven Industries</h1>
+            <p>This slide showcases the company profile of Raven Industries which includes overview, founder, incorporated year, solutions, details and facts & figures</p>
+        </div>
+    
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Overview</h2>
+                <p>{{ company_data.overview }}</p>
+            </div>
+    
+            <div class="card">
+                <div class="founder-year-box">
+                    <div class="founder-box">
+                        <h3>Founder</h3>
+                        <p>{{ company_data.founder }}</p>
+                    </div>
+                    <div class="year-box">
+                        <h3>Year Founded</h3>
+                        <p>{{ company_data.year_founded }}</p>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="card">
+                <h2>Our solutions</h2>
+                <ul>
+                    {% for solution in company_data.solutions %}
+                        <li>{{ solution }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+    
+            <div class="card">
+                <h2>Facts & Figures (2021)</h2>
+                <ul>
+                    <li>{{ company_data.facts.revenue }}</li>
+                    <li>{{ company_data.facts.employees }}</li>
+                    <li>{{ company_data.facts.operating_profit }}</li>
+                    <li>{{ company_data.facts.total_assets }}</li>
+                </ul>
+                <p><strong>Key Details</strong></p>
+                <ul>
+                    <li>Headquarters: {{ company_data.headquarters }}</li>
+                    <li>Industry: {{ company_data.industry }}</li>
+                    <li>Core Values: {{ company_data.core_values }}</li>
+                    <li>Ticker Symbol: {{ company_data.ticker_symbol }}</li>
+                </ul>
+            </div>
+        </div>
+    {% endblock %}
+</body>
+</html>

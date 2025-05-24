@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - SENSY IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <img src="{{ url_for('static', filename='logo2.jpg') }}" alt="SENSY 3.2 Logo" class="signup-logo">
+            <h2>Login to SENSY IoT</h2>
+            <br>
+            <br>
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="   Enter your email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="   Enter your password" required>
+                    </div>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+            <p class="signup-link">Forgot your Password? <a href="{{ url_for('signup') }}">Send Verification E-mail</a></p>
+        </div>
+    </div>
+</body>
+</html>

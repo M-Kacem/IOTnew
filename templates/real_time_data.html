@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard IoT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+{% extends "base.html" %}
+
+{% block title %}
+Real Time Data - SENSY IoT
+{% endblock %}
+
+{% block content %}
+<div class="real-time-header">
+    {% if not has_data %}
+    <div class="info-banner">
+        <i class="fas fa-info-circle"></i>
+        <span>No data sent from Sensy32. Please branch your board, upload your code, and let us display your results.</span>
+    </div>
+    {% endif %}
+</div>
+<div class="real-time-content">
+    {% if has_data %}
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Temperature</h3>
+                <canvas id="temperatureChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Humidity</h3>
+                <canvas id="humidityChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Pressure</h3>
+                <canvas id="pressureChart"></canvas>
+            </div>
+        </div>
+        <table class="activity-logs-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Temperature (°C)</th>
+                    <th>Humidity (%)</th>
+                    <th>Pressure (hPa)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in data %}
+                    <tr>
+                        <td>{{ entry.timestamp }}</td>
+                        <td>{{ entry.temperature|round(2) }}</td>
+                        <td>{{ entry.humidity|round(2) }}</td>
+                        <td>{{ entry.pressure|round(2) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-data-icon">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        <p class="no-data-message">No Real time data found!</p>
+    {% endif %}
+</div>
+
+<script>
+    // Chart.js setup
+    const ctxTemp = document.getElementById('temperatureChart').getContext('2d');
+    const ctxHum = document.getElementById('humidityChart').getContext('2d');
+    const ctxPres = document.getElementById('pressureChart').getContext('2d');
+
+    const data = {
+        labels: [{% for entry in data %}'{{ entry.timestamp.strftime('%H:%M:%S') }}',{% endfor %}],
+        temperature: [{% for entry in data %}{{ entry.temperature }},{% endfor %}],
+        humidity: [{% for entry in data %}{{ entry.humidity }},{% endfor %}],
+        pressure: [{% for entry in data %}{{ entry.pressure }},{% endfor %}]
+    };
+
+    new Chart(ctxTemp, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: data.temperature,
+                borderColor: '#F44336',
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: { display: true, title: { display: true, text: 'Time' } },
+                y: { display: true, title: { display: true, text: 'Temperature (°C)' } }
+            }
+        }
+    });
+
+    new Chart(ctxHum, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Humidity (%)',
+                data: data.humidity,
+                borderColor: '#2196F3',
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: { display: true, title: { display: true, text: 'Time' } },
+                y: { display: true, title: { display: true, text: 'Humidity (%)' } }
+            }
+        }
+    });
+
+    new Chart(ctxPres, {
+        type: 'line',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                label: 'Pressure (hPa)',
+                data: data.pressure,
+                borderColor: '#4CAF50',
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                x: { display: true, title: { display: true, text: 'Time' } },
+                y: { display: true, title: { display: true, text: 'Pressure (hPa)' } }
+            }
+        }
+    });
+</script>
+{% endblock %}
+</body>
+</html>
